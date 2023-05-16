@@ -93,7 +93,7 @@ def updateSpecificTask(list, task_id) -> None:
         else: found = False
     if found == False: print("Nie znaleziono zadania o wprowadzonym id.")
 
-print("Twoja lista do zrobienia:")
+print("Twoja lista do zrobienia: ")
 if len(list) != 0:
     for task in list:
         print(task.showTask())

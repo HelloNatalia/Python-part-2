@@ -10,7 +10,7 @@ class List():
     
     @staticmethod
     def date() -> str:
-        """Odczytuje datę od użytkownika"""
+        """Odczytuje datę od użytkownika i sprawdza jej poprawność"""
         day, month, year = "", "", ""
         while True:
             day = input("Wprowadź dzień w formacie DD: ")
