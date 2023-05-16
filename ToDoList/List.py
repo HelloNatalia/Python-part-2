@@ -9,7 +9,8 @@ class List():
         self.__date = date
     
     @staticmethod
-    def date():
+    def date() -> str:
+        """Odczytuje datę od użytkownika"""
         day, month, year = "", "", ""
         while True:
             day = input("Wprowadź dzień w formacie DD: ")
@@ -29,30 +30,40 @@ class List():
         return date
     
     @staticmethod
-    def createTask():
+    def createTask() -> object:
+        """Tworzy zadanie"""
         title = input("Wprowadź tytuł zadania: ")
         description = input("Wprowadź opis zadania: ")
         date = List.date()
         task = List(title, description, date)
         return task
 
-    def showTask(self):
-        return f"\n{self.__id} - {self.__title} - {self.__date}"
+    def showTask(self) -> str:
+        """Pokazuje podstawowe informacje o zadaniu"""
+        # return f"\n{self.__id} - {self.__title} - {self.__date}"
+        return f"\n{self._List__id} - {self._List__title} - {self._List__date}"
     
-    def getId(self):
+    def getId(self) -> int:
+        """Pobiera id zadania"""
         return self.__id
-    def getTitle(self):
+    def getTitle(self) -> str:
+        """Pobiera tytuł zadania"""
         return self.__title
-    def getDescription(self):
+    def getDescription(self) -> str:
+        """Pobiera opis zadania"""
         return self.__description
-    def getDate(self):
+    def getDate(self) -> str:
+        """Pobiera datę"""
         return self.__date
     
-    def changeTitle(self, new_title):
+    def changeTitle(self, new_title) -> None:
+        """Zmienia tytuł"""
         self.__title = new_title
-    def changeDescription(self, new_desc):
+    def changeDescription(self, new_desc) -> None:
+        """Zmienia opis"""
         self.__description = new_desc
-    def changeDate(self, new_date):
+    def changeDate(self, new_date) -> None:
+        """Zmienia datę"""
         self.__date = new_date
     
     

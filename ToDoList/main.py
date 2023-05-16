@@ -1,9 +1,35 @@
 from List import List
+import json
+
+# Do zapisywania i odczytywania jsona #
+class ListEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, List):
+            return obj.__dict__
+        return super().default(obj)
+    
+class ListDecoder(json.JSONDecoder):
+    def __init__(self, *args, **kwargs):
+        super().__init__(object_hook=self.object_hook, *args, **kwargs)
+
+    def object_hook(self, dct):
+        if '_List__id' in dct and '_List__title' in dct and '_List__description' in dct and '_List__date' in dct:
+            return List(dct['_List__title'], dct['_List__description'], dct['_List__date'])
+        return dct
+
+def loadListFromJsonFile(filename):
+    with open(filename, 'r') as file:
+        data = json.load(file, cls=ListDecoder)
+        return data
+# # # # # # # # # # # # # # # # # # #
 
 def menu():
     print("\n\n1. Dodaj nowe zadanie\n2. Wyświetl listę zadań\n3. Wyświetl zadanie\n4. Usuń zadanie\n5. Aktualizuj zadanie\n6. Zapisz do pliku\n0. Koniec programu")
 
-def showList(list):
+list = loadListFromJsonFile('lista.json')
+
+def showList(list) -> None:
+    """Wyświetla listę todo"""
     show_desc = ""
     if len(list) != 0:
         while show_desc != "t" and show_desc != "n":
@@ -15,7 +41,8 @@ def showList(list):
     else:
         print("Nie ma żadnych zadań na liście.")
 
-def deleteSpecificTask(list, task_id):
+def deleteSpecificTask(list, task_id) -> None:
+    """Usuwa zadanie"""
     i = 0
     found = False
     for task in list:
@@ -27,7 +54,8 @@ def deleteSpecificTask(list, task_id):
         i += 1
     if found == False: print("Nie znaleziono zadania o wprowadzonym id.")
 
-def showSpecificTask(list, task_id):
+def showSpecificTask(list, task_id) -> None:
+    """Pokazuje konkretne zadanie"""
     found = False
     for task in list:
         if task.getId() == task_id:
@@ -38,7 +66,8 @@ def showSpecificTask(list, task_id):
         else: found = False
     if found == False: print("Nie znaleziono zadania o wprowadzonym id.")
 
-def updateSpecificTask(list, task_id):
+def updateSpecificTask(list, task_id) -> None:
+    """Aktualizuje konkretne zadanie"""
     i = 0
     found = False
     for task in list:
@@ -63,16 +92,22 @@ def updateSpecificTask(list, task_id):
             break
         else: found = False
     if found == False: print("Nie znaleziono zadania o wprowadzonym id.")
-        
 
-list = []
+print("Twoja lista do zrobienia:")
+if len(list) != 0:
+    for task in list:
+        print(task.showTask())
+else:
+    print("Nie ma żadnych zadań na liście.")
+
 
 while True:
     try:
         menu()
         op = int(input("\nWybierz operację: "))
         if op == 0:
-            # Zapisanie listy do pliku
+            with open("lista.json", "w") as file:
+                json.dump(list, file, cls=ListEncoder)
             break
         elif op == 1:
             task = List.createTask()
@@ -98,7 +133,8 @@ while True:
             except ValueError:
                 print("Wprowadzono błędne id")
         elif op == 6:
-            pass
+            with open("lista.json", "w") as file:
+                json.dump(list, file, cls=ListEncoder)
         else:
             print("Wprowadzono niepoprawny numer operacji")
     except ValueError:
