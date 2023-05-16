@@ -1,12 +1,12 @@
 import abc
 
 class Work(abc.ABC):
-    id: int = 0
+    iid: int = 0
 
     @abc.abstractmethod
     def __init__(self, type, title, author, ISBN):
-        Work.id += 1
-        self.__id = Work.id
+        Work.iid += 1
+        self.__id = Work.iid
         self.__type = type
         self.__title = title
         self.__author = author
@@ -40,7 +40,7 @@ class Ebook(Book):
     def __init__(self, title, author, ISBN, pages, format):
         super().__init__(title, author, ISBN, pages)
         self.__format = format
-        self.__type = "ebook"
+        self._Work__type = "ebook"
 
     def getTitle(self):
         return self._Work__title
@@ -79,9 +79,13 @@ class Zamowienie():
     def info(self, oferta):
         for typ in oferta:
             for element in oferta[typ]:
-                if element == self.__bookid:
-                    type = typ
-                    work = element
+                if element.getId() == self.__bookid:
+                    if element.getType() == "book": type = "Książka"
+                    elif element.getType() == "ebook": type = "E-book"
+                    else: type = "Audiobook"
+                    return f"Zamówienie nr {self.__id}:\n{type} o id {element.getId()}\n{element.getTitle()} {element.getAuthor()}\nZamówiona ilość: {self.__amount}"
+                    
+
         
 
-        return f"Zamówienie nr {self.__id}:\n{element.getType()} o id {element.getId()}\n{element.getTitle()} {element.getAuthor()}\nZamówiona ilość: {self.__amount}"
+        

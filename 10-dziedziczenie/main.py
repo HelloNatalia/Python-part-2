@@ -48,5 +48,4 @@ while True:
         for order in zamowienia:
             print(order.info(oferta))
 
-# Wyświetla wszystko w zamóieniach jako audiobook
-# złe id - pokazuje ostatnie
+
