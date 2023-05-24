@@ -2,7 +2,7 @@ from datetime import datetime
 
 class List():
     id: int = 0
-    week = ['Poinedziałek', 'Wtorek', 'Środa', 'Czwartek', 'Piątek', 'Sobota', 'Niedziela']
+    week = ['Poniedziałek', 'Wtorek', 'Środa', 'Czwartek', 'Piątek', 'Sobota', 'Niedziela']
 
     def __init__(self, title, description, date, daytodo = None, day_of_week = None):
         List.id += 1
@@ -73,7 +73,7 @@ class List():
     def showTask(self) -> str:
         """Pokazuje podstawowe informacje o zadaniu"""
         # return f"\n{self.__id} - {self.__title} - {self.__date}"
-        if self.__daytodo and self.__day_of_week:
+        if self.__daytodo != None and self.__day_of_week != None:
             return f"\n{self.__id} - {self.__title} - {self.__date}\nDo wykonania w: {List.week[self.__day_of_week]} {self.__daytodo}"
         else:
             return f"\n{self.__id} - {self.__title} - {self.__date}"

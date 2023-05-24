@@ -1,4 +1,5 @@
 from List import List
+from datetime import date, timedelta, datetime
 import json
 
 # Do zapisywania i odczytywania jsona #
@@ -24,7 +25,7 @@ def loadListFromJsonFile(filename):
 # # # # # # # # # # # # # # # # # # #
 
 def menu():
-    print("\n\n1. Dodaj nowe zadanie\n2. Wyświetl listę zadań\n3. Wyświetl zadanie\n4. Usuń zadanie\n5. Aktualizuj zadanie\n6. Przypisz zadanie do konkretnego dnia\n7. Zapisz do pliku\n0. Koniec programu")
+    print("\n\n1. Dodaj nowe zadanie\n2. Wyświetl całą listę zadań\n3. Wyświetl konkretne zadanie\n4. Wyświetl zadania przypisane do konkretnego dnia tygodnia\n5. Wyświetl zadania przypisane do konkretnej daty\n6. Wyświetl zadania przypisane do konkretnego tygodnia\n7. Usuń zadanie\n8. Aktualizuj zadanie\n9. Przypisz zadanie do konkretnego dnia\n10. Zapisz do pliku\n0. Koniec programu")
 
 list = loadListFromJsonFile('lista.json')
 
@@ -78,7 +79,7 @@ def updateSpecificTask(list, task_id) -> None:
                 if change_title == "t": new_title = input("Wpisz nowy tytuł: ")
                 elif change_title == "n": new_title = task.getTitle()
                 change_desc = input("Czy chcesz zmienić opis zadania? (t/n): ")
-                if change_desc == "t": new_desc = input("Wpisz nowy tytuł: ")
+                if change_desc == "t": new_desc = input("Wpisz nowy opis: ")
                 elif change_desc == "n": new_desc = task.getDescription()
                 change_date = input("Czy chcesz zmienić date zadania? (t/n): ")
                 if change_date == "t": new_date = List.date()
@@ -91,7 +92,7 @@ def updateSpecificTask(list, task_id) -> None:
                 elif change_daytodo == 'n':
                     new_daytodo = task.getDaytodo()
                     new_day_of_week = task.getDay_of_week()
-                if new_title and new_desc and new_date and new_daytodo and new_day_of_week: break
+                if new_title and new_desc and new_date and new_daytodo != None and new_day_of_week != None: break
             # list[i] = List(new_title, new_desc, new_date)
             task.changeTitle(new_title)
             task.changeDescription(new_desc)
@@ -126,6 +127,63 @@ def addDayToDo(list, task_id) -> None:
                 task.changeDaytodo(new_daytodo, new_day_of_week)
     if found == False: print("Nie znaleziono zadania o wprowadzonym id.")
     
+def showTasksFromSpecificDay(list):
+    daytodo_list = []
+    today = date.today()
+    future_date = today + timedelta(days=6)
+    while True:
+        day = input("Wpisz z jakiego dnia tygodnia chcesz wyświetlić zadania (obowiązują dni od dzisiaj do 6 w przód): ")
+        day = day.capitalize()
+        if day in List.week:
+            for task in list:
+                if task.getDaytodo() != None and task.getDay_of_week() != None:
+                    date_format = "%d-%m-%Y"
+                    daytodo = datetime.strptime(task.getDaytodo(), date_format).date()
+                    if List.week[task.getDay_of_week()] == day and today <= daytodo <= future_date:
+                        daytodo_list.append(task)
+            break
+    if len(daytodo_list) != 0:
+        for task in daytodo_list:
+            print(task.showTask())
+    else:
+        print("Nie ma żadnych zadań na liście w tym dniu.")
+
+def showTasksFromSpecificDate(list):
+    daytodo_list = []
+    date = List.date()
+    for task in list:
+        if task.getDaytodo() == date:
+            daytodo_list.append(task)
+    if len(daytodo_list) != 0:
+        for task in daytodo_list:
+            print(task.showTask())
+    else:
+        print("Nie ma żadnych zadań na liście w tym dniu.")
+        
+def showTasksFromSpecificWeek(list):
+    week_list = [[],[],[],[],[],[],[]]
+    print("Podaj datę rozpoczęcia tygodnia, od tej daty pokażą się przypisane zadania do wykonania na 7 dni w przód.")
+    date = List.date()
+    date_format = "%d-%m-%Y"
+    date_start = datetime.strptime(date, date_format).date()
+    # date_end = date_start + timedelta(days=6)
+    for i in range(7):
+        for task in list:
+            if task.getDaytodo() and task.getDay_of_week:
+                daytodo = datetime.strptime(task.getDaytodo(), date_format).date()
+                if daytodo == date_start:
+                    week_list[i].append(task)
+        date_start = date_start + timedelta(days=1)
+    
+    # for day in week_list:
+    #     for task in week_list[day]:
+    #         print(task.showTask())
+    
+    for day in week_list:
+        for i in range(len(day)):
+            print(day[i].showTask())
+
+
 
 
 
@@ -157,24 +215,30 @@ while True:
             except ValueError:
                 print("Wprowadzono błędne id")
         elif op == 4:
+                showTasksFromSpecificDay(list)
+        elif op == 5:
+                showTasksFromSpecificDate(list)
+        elif op == 6:
+                showTasksFromSpecificWeek(list)
+        elif op == 7:
             try:
                 task_id = int(input("Które zadanie chcesz usunąć? podaj jego id: "))
                 deleteSpecificTask(list, task_id)
             except ValueError:
                 print("Wprowadzono błędne id")
-        elif op == 5:
+        elif op == 8:
             try:
                 task_id = int(input("Które zadanie chcesz zaktualizować? podaj jego id: "))
                 updateSpecificTask(list, task_id)
             except ValueError:
                 print("Wprowadzono błędne id")
-        elif op == 6:
+        elif op == 9:
             try:
                 task_id = int(input("Które zadanie chcesz przypisać do konkretnego dnia tygodnia? podaj jego id: "))
                 addDayToDo(list, task_id)
             except ValueError:
                 print("Wprowadzono błędne id")
-        elif op == 7:
+        elif op == 10:
             with open("lista.json", "w") as file:
                 json.dump(list, file, cls=ListEncoder)
         else:
