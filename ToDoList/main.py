@@ -127,7 +127,8 @@ def addDayToDo(list, task_id) -> None:
                 task.changeDaytodo(new_daytodo, new_day_of_week)
     if found == False: print("Nie znaleziono zadania o wprowadzonym id.")
     
-def showTasksFromSpecificDay(list):
+def showTasksFromSpecificDay(list) -> None:
+    """Wyświetla zadania przypisane do konkretnego dnia tygodnia napisanego słownie"""
     daytodo_list = []
     today = date.today()
     future_date = today + timedelta(days=6)
@@ -148,7 +149,8 @@ def showTasksFromSpecificDay(list):
     else:
         print("Nie ma żadnych zadań na liście w tym dniu.")
 
-def showTasksFromSpecificDate(list):
+def showTasksFromSpecificDate(list) -> None:
+    """Wypisuje zadania przypisane do konkretnej daty"""
     daytodo_list = []
     date = List.date()
     for task in list:
@@ -160,8 +162,9 @@ def showTasksFromSpecificDate(list):
     else:
         print("Nie ma żadnych zadań na liście w tym dniu.")
         
-def showTasksFromSpecificWeek(list):
-    week_list = [[],[],[],[],[],[],[]]
+def showTasksFromSpecificWeek(list) -> None:
+    """Wypisuje zadania przypisane do konkretnego tygodnia"""
+    week_list: list[list[List]] = [[],[],[],[],[],[]]
     print("Podaj datę rozpoczęcia tygodnia, od tej daty pokażą się przypisane zadania do wykonania na 7 dni w przód.")
     date = List.date()
     date_format = "%d-%m-%Y"
@@ -175,16 +178,9 @@ def showTasksFromSpecificWeek(list):
                     week_list[i].append(task)
         date_start = date_start + timedelta(days=1)
     
-    # for day in week_list:
-    #     for task in week_list[day]:
-    #         print(task.showTask())
-    
     for day in week_list:
         for i in range(len(day)):
             print(day[i].showTask())
-
-
-
 
 
 print("Twoja lista do zrobienia: ")
