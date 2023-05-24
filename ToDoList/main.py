@@ -13,8 +13,8 @@ class ListDecoder(json.JSONDecoder):
         super().__init__(object_hook=self.object_hook, *args, **kwargs)
 
     def object_hook(self, dct):
-        if '_List__id' in dct and '_List__title' in dct and '_List__description' in dct and '_List__date' in dct:
-            return List(dct['_List__title'], dct['_List__description'], dct['_List__date'])
+        if '_List__id' in dct and '_List__title' in dct and '_List__description' in dct and '_List__date' in dct and '_List__daytodo' in dct and '_List__day_of_week' in dct:
+            return List(dct['_List__title'], dct['_List__description'], dct['_List__date'], dct['_List__daytodo'], dct['_List__day_of_week'])
         return dct
 
 def loadListFromJsonFile(filename):
@@ -24,7 +24,7 @@ def loadListFromJsonFile(filename):
 # # # # # # # # # # # # # # # # # # #
 
 def menu():
-    print("\n\n1. Dodaj nowe zadanie\n2. Wyświetl listę zadań\n3. Wyświetl zadanie\n4. Usuń zadanie\n5. Aktualizuj zadanie\n6. Zapisz do pliku\n0. Koniec programu")
+    print("\n\n1. Dodaj nowe zadanie\n2. Wyświetl listę zadań\n3. Wyświetl zadanie\n4. Usuń zadanie\n5. Aktualizuj zadanie\n6. Przypisz zadanie do konkretnego dnia\n7. Zapisz do pliku\n0. Koniec programu")
 
 list = loadListFromJsonFile('lista.json')
 
@@ -83,15 +83,51 @@ def updateSpecificTask(list, task_id) -> None:
                 change_date = input("Czy chcesz zmienić date zadania? (t/n): ")
                 if change_date == "t": new_date = List.date()
                 elif change_date == "n": new_date = task.getDate()
-                if new_title and new_desc and new_date: break
+                change_daytodo = input("Czy chcesz zmienić przypisanie zadania do dnia? (t/n): ")
+                if change_daytodo == 't': 
+                    new_daytodo_info = task.dayToDo(new_date)
+                    new_daytodo = new_daytodo_info[1]
+                    new_day_of_week = new_daytodo_info[0]
+                elif change_daytodo == 'n':
+                    new_daytodo = task.getDaytodo()
+                    new_day_of_week = task.getDay_of_week()
+                if new_title and new_desc and new_date and new_daytodo and new_day_of_week: break
             # list[i] = List(new_title, new_desc, new_date)
             task.changeTitle(new_title)
             task.changeDescription(new_desc)
             task.changeDate(new_date)
+            task.changeDaytodo(new_daytodo, new_day_of_week)
             found = True
             break
         else: found = False
     if found == False: print("Nie znaleziono zadania o wprowadzonym id.")
+
+def addDayToDo(list, task_id) -> None:
+    """Przypisuje lub zmienia datę, do której przypisane jest zadanie"""
+    found = False
+    for task in list:
+        if task.getId() == task_id:
+            found = True
+            if task.getDaytodo() and task.getDay_of_week():
+                change = input("To zadanie ma już przypisaną datę, czy chcesz ją zmienić? (t/n)")
+                while True:
+                    if change == 't':
+                        new_daytodo_info = task.dayToDo(task.getDate())
+                        new_daytodo = new_daytodo_info[1]
+                        new_day_of_week = new_daytodo_info[0]
+                        task.changeDaytodo(new_daytodo, new_day_of_week)
+                        break
+                    if change == 'n':
+                        break
+            else:
+                new_daytodo_info = task.dayToDo(task.getDate())
+                new_daytodo = new_daytodo_info[1]
+                new_day_of_week = new_daytodo_info[0]
+                task.changeDaytodo(new_daytodo, new_day_of_week)
+    if found == False: print("Nie znaleziono zadania o wprowadzonym id.")
+    
+
+
 
 print("Twoja lista do zrobienia: ")
 if len(list) != 0:
@@ -133,6 +169,12 @@ while True:
             except ValueError:
                 print("Wprowadzono błędne id")
         elif op == 6:
+            try:
+                task_id = int(input("Które zadanie chcesz przypisać do konkretnego dnia tygodnia? podaj jego id: "))
+                addDayToDo(list, task_id)
+            except ValueError:
+                print("Wprowadzono błędne id")
+        elif op == 7:
             with open("lista.json", "w") as file:
                 json.dump(list, file, cls=ListEncoder)
         else:

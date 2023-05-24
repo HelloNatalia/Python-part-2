@@ -1,12 +1,17 @@
+from datetime import datetime
+
 class List():
     id: int = 0
+    week = ['Poinedziałek', 'Wtorek', 'Środa', 'Czwartek', 'Piątek', 'Sobota', 'Niedziela']
 
-    def __init__(self, title, description, date):
+    def __init__(self, title, description, date, daytodo = None, day_of_week = None):
         List.id += 1
         self.__id = List.id
         self.__title = title
         self.__description = description
         self.__date = date
+        self.__daytodo = daytodo
+        self.__day_of_week = day_of_week
     
     @staticmethod
     def date() -> str:
@@ -30,18 +35,48 @@ class List():
         return date
     
     @staticmethod
+    def dayToDo(deadline) -> list:
+        """Sprawdza czy użytkownik chce przypisać do konkretnego dnia zadanie i to robi, czy nie"""
+        while True:
+            yes_or_no = input("Czy chcesz przypisać to zadanie do konkretnego dnia? (t/n): ")
+            if yes_or_no == 't':
+                while True:
+                    daytodo = List.date()
+                    date_format = "%d-%m-%Y"
+                    daytodo_obj = datetime.strptime(daytodo, date_format).date()
+                    deadline_obj = datetime.strptime(deadline, date_format).date()
+                    if daytodo_obj <= deadline_obj:
+                        day_of_week = daytodo_obj.weekday()
+                        daytodo = daytodo_obj.strftime(date_format)
+                        break
+                    else:
+                        print("Wprowadzona przez ciebie data jest po terminie do wykonania.\n")
+                return_list = [day_of_week, daytodo]
+                break
+            elif yes_or_no == 'n':
+                return_list = [None, None]
+                break
+        return return_list
+              
+    @staticmethod
     def createTask() -> object:
         """Tworzy zadanie"""
         title = input("Wprowadź tytuł zadania: ")
         description = input("Wprowadź opis zadania: ")
         date = List.date()
-        task = List(title, description, date)
+        daytodo_info = List.dayToDo(date)
+        daytodo = daytodo_info[1]
+        day_of_week = daytodo_info[0]
+        task = List(title, description, date, daytodo, day_of_week)
         return task
 
     def showTask(self) -> str:
         """Pokazuje podstawowe informacje o zadaniu"""
         # return f"\n{self.__id} - {self.__title} - {self.__date}"
-        return f"\n{self._List__id} - {self._List__title} - {self._List__date}"
+        if self.__daytodo and self.__day_of_week:
+            return f"\n{self.__id} - {self.__title} - {self.__date}\nDo wykonania w: {List.week[self.__day_of_week]} {self.__daytodo}"
+        else:
+            return f"\n{self.__id} - {self.__title} - {self.__date}"
     
     def getId(self) -> int:
         """Pobiera id zadania"""
@@ -55,6 +90,12 @@ class List():
     def getDate(self) -> str:
         """Pobiera datę"""
         return self.__date
+    def getDaytodo(self) -> str:
+        """Pobiera datę, do której jest przypisane zadanie"""
+        return self.__daytodo
+    def getDay_of_week(self) -> int:
+        """Pobiera numer odpowiadający konkretnemu dniu tygodnia (0 - Poniedziałek, 1 - Wtorek, ...)"""
+        return self.__day_of_week
     
     def changeTitle(self, new_title) -> None:
         """Zmienia tytuł"""
@@ -65,5 +106,9 @@ class List():
     def changeDate(self, new_date) -> None:
         """Zmienia datę"""
         self.__date = new_date
+    def changeDaytodo(self, new_daytodo, new_day_of_week) -> None:
+        """Zmienia datę, do której przypisane jest zadanie i odpowiadający jej dzień tygodnia"""
+        self.__daytodo = new_daytodo
+        self.__day_of_week = new_day_of_week
     
     
