@@ -14,6 +14,8 @@ class ListDecoder(json.JSONDecoder):
         super().__init__(object_hook=self.object_hook, *args, **kwargs)
 
     def object_hook(self, dct):
+        if isinstance(dct, dict) and not dct:  # Sprawdzam czy słownik jest pusty
+            return []  # Jeśli tak to zwracam pustą listę
         if '_List__id' in dct and '_List__title' in dct and '_List__description' in dct and '_List__date' in dct and '_List__daytodo' in dct and '_List__day_of_week' in dct:
             return List(dct['_List__title'], dct['_List__description'], dct['_List__date'], dct['_List__daytodo'], dct['_List__day_of_week'])
         return dct

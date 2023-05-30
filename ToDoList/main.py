@@ -2,11 +2,21 @@ from List import List
 from datetime import date, timedelta, datetime
 import json
 import list_operations
+import os
 
 def menu():
     print("\n\n1. Dodaj nowe zadanie\n2. Wyświetl całą listę zadań\n3. Wyświetl konkretne zadanie\n4. Wyświetl zadania przypisane do konkretnego dnia tygodnia\n5. Wyświetl zadania przypisane do konkretnej daty\n6. Wyświetl zadania przypisane do konkretnego tygodnia\n7. Usuń zadanie\n8. Aktualizuj zadanie\n9. Przypisz zadanie do konkretnego dnia\n10. Zapisz do pliku\n0. Koniec programu")
 
-list = list_operations.loadListFromJsonFile('lista.json')
+try:
+    if os.path.exists('lista.json'):
+        list = list_operations.loadListFromJsonFile('lista.json')
+    else:
+        with open('lista.json', "w") as file:
+            json.dump({}, file)
+        list = list_operations.loadListFromJsonFile('lista.json')
+except:
+    print("Nieoczekiwany błąd pliku")
+    exit()
 
 print("Twoja lista do zrobienia: ")
 if len(list) != 0:
