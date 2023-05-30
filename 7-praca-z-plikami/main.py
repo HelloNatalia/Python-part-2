@@ -15,6 +15,14 @@ words = []
 for lines in file_lines:
     words += lines.split()
 
+for i in range(len(words)):
+    if "." in words[i]:
+        words[i] = words[i].replace(".", "")
+    if "," in words[i]:
+        words[i] = words[i].replace(",", "")
+    if ";" in words[i]:
+        words[i] = words[i].replace(";", "")
+
 amount = len(words)
 print(f"W tekście jest {amount} słów.")
 
