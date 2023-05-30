@@ -9,6 +9,12 @@ def menu():
 
 try:
     if os.path.exists('lista.json'):
+
+        with open('lista.json', "r+") as file:
+            try:
+                data = json.load(file)
+            except:
+                json.dump({}, file)
         list = list_operations.loadListFromJsonFile('lista.json')
     else:
         with open('lista.json', "w") as file:
